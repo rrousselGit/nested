@@ -75,7 +75,7 @@ void main() {
     expect(buildCount, equals(2));
   });
 
-  testWidgets('no unnecessary rebuild', (tester) async {
+  testWidgets('no unnecessary rebuild #2', (tester) async {
     var buildCount = 0;
     final child = Nested(
       nested: [
@@ -91,6 +91,79 @@ void main() {
 
     expect(buildCount, equals(1));
   });
+
+  testWidgets('no unnecessary rebuild #3', (tester) async {
+    var rootBuildCount = 0;
+    var secondBuildCount = 0;
+
+    final root = Foo(didBuild: (_, __) => rootBuildCount++);
+    final second = Foo(didBuild: (_, __) => secondBuildCount++);
+
+    await tester.pumpWidget(Nested(
+      nested: [
+        root,
+        second,
+      ],
+      child: Container(),
+    ));
+
+    await tester.pumpWidget(Nested(
+      nested: [
+        root,
+        second,
+      ],
+      child: Container(),
+    ));
+
+    expect(
+      rootBuildCount,
+      equals(1),
+      reason: '`second` never changed',
+    );
+    expect(
+      secondBuildCount,
+      equals(2),
+      reason: '`child` rebuilt',
+    );
+  }, skip: true);
+
+  testWidgets(
+    'rebuilding with more nested without updating previous nested rebuilds latest previous nested',
+    (tester) async {
+      await tester.pumpWidget(const Nested(
+        nested: [
+          Foo(height: 0),
+        ],
+        child: Text('foo', textDirection: TextDirection.ltr),
+      ));
+
+      await tester.pumpWidget(const Nested(
+        nested: [
+          Foo(height: 0),
+          Foo(height: 1),
+        ],
+        child: Text('foo', textDirection: TextDirection.ltr),
+      ));
+
+      expect(find.text('foo'), findsOneWidget);
+      final box = find.byType(SizedBox).evaluate().toList();
+      expect(box.length, equals(2));
+
+      for (var i = 0; i < 2; i++) {
+        expect(
+          box[i].widget,
+          const TypeMatcher<SizedBox>().having((s) => s.height, 'height', i),
+        );
+      }
+    },
+    skip: true,
+  );
+
+  testWidgets(
+    "moving a SingleChildWidget don't destroy state",
+    (tester) async {},
+    skip: true,
+  );
 
   testWidgets('SingleChildWidget can be used by itself', (tester) async {
     await tester.pumpWidget(const Foo(
