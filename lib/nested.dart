@@ -19,6 +19,18 @@ class Nested extends SingleChildStatelessWidget {
     }
     return tree;
   }
+
+  @override
+  _NestedElement createElement() => _NestedElement(this);
+}
+
+// currently useless
+// but that's where the failing tests should be fixed
+class _NestedElement extends SingleChildStatelessElement {
+  _NestedElement(Nested widget) : super(widget);
+
+  @override
+  Nested get widget => super.widget as Nested;
 }
 
 class _NestedHook extends StatelessWidget {
