@@ -28,12 +28,12 @@ Using `nested`, it is possible to flatten thhe previous tree into:
 ```dart
 Nested(
   children: [
-		MyWidget(),
-		AnotherWidget(),
-		Again(),
-		AndAgain(),
+    MyWidget(),
+    AnotherWidget(),
+    Again(),
+    AndAgain(),
   ],
-	child: Leaf(),
+  child: Leaf(),
 ),
 ```
 
@@ -47,7 +47,6 @@ concrete implementation:
 - [SingleChildStatelessWidget]
 - [SingleChildStatefulWidget]
 
-
 These are [SingleChildWidget] variants of the original `Stateless`/`StatefulWidget`.
 
 The difference between a widget and its single-child variant is that they have
@@ -57,14 +56,14 @@ As such, a `StatelessWidget` would be:
 
 ```dart
 class MyWidget extends StatelessWidget {
-	MyWidget({Key key, this.child}): super(key: key);
+  MyWidget({Key key, this.child}): super(key: key);
 
-	final Widget child;
+  final Widget child;
 
-	@override
-	Widget build(BuildContext context) {
-		return SomethingWidget(child: child);
-	}
+  @override
+  Widget build(BuildContext context) {
+    return SomethingWidget(child: child);
+  }
 }
 ```
 
@@ -72,12 +71,12 @@ Whereas a [SingleChildStatelessWidget] would be:
 
 ```dart
 class MyWidget extends SingleChildStatelessWidget {
-	MyWidget({Key key, Widget child}): super(key: key, child: child);
+  MyWidget({Key key, Widget child}): super(key: key, child: child);
 
-	@override
-	Widget buildWithChild(BuildContext context, Widget child) {
-		return SomethingWidget(child: child);
-	}
+  @override
+  Widget buildWithChild(BuildContext context, Widget child) {
+    return SomethingWidget(child: child);
+  }
 }
 ```
 
@@ -93,10 +92,10 @@ and to be placed inside `children` of [Nested] like so:
 
 ```dart
 Nester(
-	children: [
-		MyWidget(),
-		...
-	],
-	child: AnotherWidget(),
+  children: [
+    MyWidget(),
+    ...
+  ],
+  child: AnotherWidget(),
 )
 ```
