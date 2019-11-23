@@ -159,12 +159,6 @@ void main() {
     skip: true,
   );
 
-  testWidgets(
-    "moving a SingleChildWidget don't destroy state",
-    (tester) async {},
-    skip: true,
-  );
-
   testWidgets('SingleChildWidget can be used by itself', (tester) async {
     await tester.pumpWidget(const Foo(
       height: 42,
@@ -189,7 +183,7 @@ class Foo extends SingleChildStatelessWidget {
   final void Function(BuildContext context, Widget child) didBuild;
 
   @override
-  Widget build(BuildContext context, {Widget child}) {
+  Widget buildWithChild(BuildContext context, Widget child) {
     didBuild?.call(context, child);
     return SizedBox(height: height, child: child);
   }

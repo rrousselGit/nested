@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class Nested extends SingleChildStatelessWidget {
@@ -7,30 +8,18 @@ class Nested extends SingleChildStatelessWidget {
   final List<SingleChildWidget> nested;
 
   @override
-  Widget build(BuildContext context, {Widget child}) {
+  Widget buildWithChild(BuildContext context, Widget child) {
     var tree = _NestedHook(
       child: child,
     );
-    for (final provider in nested.reversed) {
+    for (final child in nested.reversed) {
       tree = _NestedHook(
-        child: provider,
+        child: child,
         nextChild: tree,
       );
     }
     return tree;
   }
-
-  @override
-  _NestedElement createElement() => _NestedElement(this);
-}
-
-// currently useless
-// but that's where the failing tests should be fixed
-class _NestedElement extends SingleChildStatelessElement {
-  _NestedElement(Nested widget) : super(widget);
-
-  @override
-  Nested get widget => super.widget as Nested;
 }
 
 class _NestedHook extends StatelessWidget {
@@ -57,10 +46,10 @@ class _NestedHookElement extends StatelessElement {
 
 abstract class SingleChildWidget implements Widget {
   @override
-  SingleChildWidgetElement createElement();
+  _SingleChildWidgetElement createElement();
 }
 
-mixin SingleChildWidgetElement on Element {
+mixin _SingleChildWidgetElement on Element {
   Widget _widget;
 
   @override
@@ -81,21 +70,26 @@ abstract class SingleChildStatelessWidget extends StatelessWidget
   final Widget _child;
 
   @override
-  Widget build(BuildContext context, {Widget child});
+  Widget buildWithChild(BuildContext context, Widget child);
 
   @override
-  SingleChildStatelessElement createElement() =>
-      SingleChildStatelessElement(this);
+  Widget build(BuildContext context) {
+    throw StateError('use buildWithChild instead');
+  }
+
+  @override
+  _SingleChildStatelessElement createElement() =>
+      _SingleChildStatelessElement(this);
 }
 
-class SingleChildStatelessElement extends StatelessElement
-    with SingleChildWidgetElement {
-  SingleChildStatelessElement(SingleChildStatelessWidget widget)
+class _SingleChildStatelessElement extends StatelessElement
+    with _SingleChildWidgetElement {
+  _SingleChildStatelessElement(SingleChildStatelessWidget widget)
       : super(widget);
 
   @override
   Widget build() {
-    return widget.build(this, child: _widget ?? widget._child);
+    return widget.buildWithChild(this, _widget ?? widget._child);
   }
 
   @override
@@ -103,13 +97,13 @@ class SingleChildStatelessElement extends StatelessElement
       super.widget as SingleChildStatelessWidget;
 }
 
-class Adapter extends SingleChildStatelessWidget {
-  const Adapter({Key key, this.builder}) : super(key: key);
+class NestedAdapter extends SingleChildStatelessWidget {
+  const NestedAdapter({Key key, this.builder}) : super(key: key);
 
   final Widget Function(BuildContext context, Widget child) builder;
 
   @override
-  Widget build(BuildContext context, {Widget child}) {
+  Widget buildWithChild(BuildContext context, Widget child) {
     return builder(context, child);
   }
 }
