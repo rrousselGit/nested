@@ -1,7 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+/// A widget that simplify the writing of deeply nested widget trees.
+///
+/// It relies on the new kind of widget [SingleChildWidget], which has two
+/// concrete implementations:
+/// - [SingleChildStatelessWidget]
+/// - [SingleChildStatefulWidget]
+///
+/// They are both respectively a [SingleChildWidget] variant of [StatelessWidget]
+/// and [StatefulWidget].
+///
+/// The difference between a widget and its single-child variant is that they have
+/// a custom `build` method that takes an extra parameter.
+///
+/// As such, a `StatelessWidget` would be:
+///
+/// ```dart
+/// class MyWidget extends StatelessWidget {
+///   MyWidget({Key key, this.child}): super(key: key);
+///
+///   final Widget child;
+///
+///   @override
+///   Widget build(BuildContext context) {
+///     return SomethingWidget(child: child);
+///   }
+/// }
+/// ```
+///
+/// Whereas a [SingleChildStatelessWidget] would be:
+///
+/// ```dart
+/// class MyWidget extends SingleChildStatelessWidget {
+///   MyWidget({Key key, Widget child}): super(key: key, child: child);
+///
+///   @override
+///   Widget buildWithChild(BuildContext context, Widget child) {
+///     return SomethingWidget(child: child);
+///   }
+/// }
+/// ```
+///
+/// This allows our new `MyWidget` to be used both with:
+///
+/// ```dart
+/// MyWidget(
+///   child: AnotherWidget(),
+/// )
+/// ```
+///
+/// and to be placed inside `children` of [Nested] like so:
+///
+/// ```dart
+/// Nested(
+///   children: [
+///     MyWidget(),
+///     ...
+///   ],
+///   child: AnotherWidget(),
+/// )
+/// ```
+
 class Nested extends StatelessWidget implements SingleChildWidget {
+  /// Allows configuring key, children and child
   Nested({
     Key key,
     @required List<SingleChildWidget> children,
@@ -203,6 +265,62 @@ class _SingleChildStatelessElement extends StatelessElement
   @override
   SingleChildStatelessWidget get widget =>
       super.widget as SingleChildStatelessWidget;
+}
+
+/// A [StatefulWidget] that is compatible with [Nested].
+abstract class SingleChildStatefulWidget extends StatefulWidget
+    implements SingleChildWidget {
+  /// Creates a widget that has exactly one child widget.
+  const SingleChildStatefulWidget({Key key, Widget child})
+      : _child = child,
+        super(key: key);
+
+  final Widget _child;
+
+  @override
+  SingleChildState<SingleChildStatefulWidget> createState();
+
+  @override
+  _SingleChildStatefulElement createElement() =>
+      _SingleChildStatefulElement(this);
+}
+
+/// A [State] for [SingleChildStatefulWidget].
+///
+/// Do not override [build] and instead override [buildWithChild].
+abstract class SingleChildState<T extends SingleChildStatefulWidget>
+    extends State<T> {
+  /// A [build] method that receives an extra `child` parameter.
+  ///
+  /// This method may be called with a `child` different from the parameter
+  /// passed to the constructor of [SingleChildStatelessWidget].
+  /// It may also be called again with a different `child`, without this widget
+  /// being recreated.
+  Widget buildWithChild(BuildContext context, Widget child);
+
+  @override
+  Widget build(BuildContext context) => buildWithChild(context, widget._child);
+}
+
+class _SingleChildStatefulElement extends StatefulElement
+    with _SingleChildWidgetElement {
+  _SingleChildStatefulElement(SingleChildStatefulWidget widget) : super(widget);
+
+  @override
+  SingleChildStatefulWidget get widget =>
+      super.widget as SingleChildStatefulWidget;
+
+  @override
+  SingleChildState<SingleChildStatefulWidget> get state =>
+      super.state as SingleChildState<SingleChildStatefulWidget>;
+
+  @override
+  Widget build() {
+    if (_parent != null) {
+      return state.buildWithChild(this, _parent.injectedChild);
+    }
+    return super.build();
+  }
 }
 
 /// A [SingleChildWidget] that delegates its implementation to a callback.

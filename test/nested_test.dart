@@ -368,7 +368,31 @@ void main() {
   // TODO: assert keys order preserved (reorder unsupported)
   // TODO: nodes can be added optionally using [if] (_Hook takes a globalKey on the child's key)
   // TODO: a nested node moves to a new Nested
-  // TODO: SingleChildStatefulWidget
+  test('SingleChildBuilder builder cannot be null', () {
+    expect(
+      () => SingleChildBuilder(builder: null),
+      throwsAssertionError,
+    );
+  });
+
+  test('100% coverage for Nested.build & _NestedHook.build', () {
+    final nested = Nested(
+      children: [MySizedBox()],
+    );
+    expect(
+      () => nested.build(null),
+      throwsStateError,
+    );
+
+    final first = nested.createElement().build() as StatelessWidget;
+
+    expect(
+      () =>
+          // ignore: invalid_use_of_protected_member
+          first.build(null),
+      throwsStateError,
+    );
+  });
   testWidgets('SingleChildBuilder can be used alone', (tester) async {
     Widget child;
     BuildContext context;
@@ -421,6 +445,78 @@ void main() {
       ]),
     );
   });
+  testWidgets('SingleChildStatefulWidget can be used alone', (tester) async {
+    Widget child;
+    BuildContext context;
+
+    final text = const Text('foo', textDirection: TextDirection.ltr);
+
+    await tester.pumpWidget(
+      MyStateful(
+        didBuild: (ctx, c) {
+          child = c;
+          context = ctx;
+          return c;
+        },
+        child: text,
+      ),
+    );
+
+    expect(find.text('foo'), findsOneWidget);
+    expect(context, equals(tester.element(find.byType(MyStateful))));
+    expect(child, equals(text));
+  });
+  testWidgets('SingleChildStatefulWidget can be used in nested',
+      (tester) async {
+    Widget child;
+    BuildContext context;
+
+    final text = const Text('foo', textDirection: TextDirection.ltr);
+
+    await tester.pumpWidget(
+      Nested(
+        children: [
+          MyStateful(
+            didBuild: (ctx, c) {
+              child = c;
+              context = ctx;
+              return c;
+            },
+          ),
+        ],
+        child: text,
+      ),
+    );
+
+    expect(find.text('foo'), findsOneWidget);
+    expect(context, equals(tester.element(find.byType(MyStateful))));
+    expect(child, equals(text));
+  });
+}
+
+class MyStateful extends SingleChildStatefulWidget {
+  const MyStateful({Key key, this.didBuild, this.didInit, Widget child})
+      : super(key: key, child: child);
+
+  final void Function(BuildContext, Widget) didBuild;
+  final void Function() didInit;
+
+  @override
+  _MyStatefulState createState() => _MyStatefulState();
+}
+
+class _MyStatefulState extends SingleChildState<MyStateful> {
+  @override
+  void initState() {
+    super.initState();
+    widget.didInit?.call();
+  }
+
+  @override
+  Widget buildWithChild(BuildContext context, Widget child) {
+    widget.didBuild?.call(context, child);
+    return child;
+  }
 }
 
 class MySizedBox extends SingleChildStatelessWidget {

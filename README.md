@@ -91,7 +91,7 @@ MyWidget(
 and to be placed inside `children` of [Nested] like so:
 
 ```dart
-Nester(
+Nested(
   children: [
     MyWidget(),
     ...
