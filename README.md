@@ -1,5 +1,5 @@
-[![Dart CI](https://github.com/rrousselGit/nested/workflows/Dart%20CI/badge.svg)](https://github.com/rrousselGit/nested/actions) [![codecov](https://codecov.io/gh/rrousselGit/nested/branch/master/graph/badge.svg?token=JW4dnv3Re9)](https://codecov.io/gh/rrousselGit/nested)
-[![nested](https://img.shields.io/pub/v/nested?label=nested)](https://pub.dev/packages/nested)
+[![Build Status](https://travis-ci.org/rrousselGit/nested.svg?branch=master)](https://travis-ci.org/rrousselGit/nested)
+[![pub package](https://img.shields.io/pub/v/nested.svg)](https://pub.dartlang.org/packages/nested) [![codecov](https://codecov.io/gh/rrousselGit/nested/branch/master/graph/badge.svg)](https://codecov.io/gh/rrousselGit/nested)
 
 A widget that simplifies the syntax for deeply nested wodget trees.
 
@@ -99,3 +99,7 @@ Nested(
   child: AnotherWidget(),
 )
 ```
+
+[singlechildwidget]: https://pub.dartlang.org/documentation/nexted/latest/nexted/SingleChildWidget-class.html
+[singlechildstatelesswidget]: https://pub.dartlang.org/documentation/nexted/latest/nexted/SingleChildStatelessWidget-class.html
+[singlechildstatefulwidget]: https://pub.dartlang.org/documentation/nexted/latest/nexted/SingleChildStatefulWidget-class.html
