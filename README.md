@@ -1,11 +1,11 @@
 [![Build Status](https://travis-ci.org/rrousselGit/nested.svg?branch=master)](https://travis-ci.org/rrousselGit/nested)
 [![pub package](https://img.shields.io/pub/v/nested.svg)](https://pub.dartlang.org/packages/nested) [![codecov](https://codecov.io/gh/rrousselGit/nested/branch/master/graph/badge.svg)](https://codecov.io/gh/rrousselGit/nested)
 
-A widget that simplifies the syntax for deeply nested wodget trees.
+A widget that simplifies the syntax for deeply nested widget trees.
 
 ## Motivation
 
-Widgets tends to get pretty nested rapidly.
+Widgets tend to get pretty nested rapidly.
 It's not rare to see:
 
 ```dart
@@ -23,7 +23,7 @@ MyWidget(
 That's not very ideal.
 
 There's where `nested` propose a solution.
-Using `nested`, it is possible to flatten thhe previous tree into:
+Using `nested`, it is possible to flatten the previous tree into:
 
 ```dart
 Nested(
