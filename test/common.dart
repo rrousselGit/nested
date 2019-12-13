@@ -17,10 +17,17 @@ class _MatchesInOrder extends Matcher {
   final List<Matcher> itemMatchers;
 
   @override
-  bool matches(covariant Finder expectation, Map<dynamic, dynamic> matchState) {
+  bool matches(Object expectation, Map<dynamic, dynamic> matchState) {
     var count = 0;
 
-    final items = expectation.evaluate().map((e) => e.widget);
+    List<Object> items;
+    if (expectation is Finder) {
+      items =
+          expectation.evaluate().map((e) => e.widget).toList(growable: false);
+    } else if (expectation is Iterable<Object>) {
+      items = expectation.toList();
+    }
+
     matchState['items'] = items;
 
     for (final item in items) {
@@ -59,13 +66,13 @@ class _MatchesInOrder extends Matcher {
     Map<dynamic, dynamic> matchState,
     bool verbose,
   ) {
-    assert(item is Finder || item is List<Object>);
+    assert(item is Finder || item is Iterable<Object>);
 
     List<Object> items;
     if (item is Finder) {
       items = item.evaluate().toList(growable: false);
-    } else if (item is List) {
-      items = item;
+    } else if (item is Iterable<Object>) {
+      items = item.toList();
     }
 
     if (items.length != itemMatchers.length) {

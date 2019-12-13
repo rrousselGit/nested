@@ -492,6 +492,125 @@ void main() {
     expect(context, equals(tester.element(find.byType(MyStateful))));
     expect(child, equals(text));
   });
+  testWidgets(
+      'SingleChildStatelessWidget can be used as mixin instead of base class',
+      (tester) async {
+    await tester.pumpWidget(
+      Nested(
+        children: [
+          ConcreteStateless(height: 24),
+        ],
+        child: const Text('42', textDirection: TextDirection.ltr),
+      ),
+    );
+
+    expect(find.text('42'), findsOneWidget);
+
+    expect(
+      find.byType(ConcreteStateless),
+      matchesInOrder([
+        isA<BaseStateless>().having((s) => s.height, 'height', 24),
+      ]),
+    );
+
+    await tester.pumpWidget(
+      ConcreteStateless(
+        height: 24,
+        child: const Text('42', textDirection: TextDirection.ltr),
+      ),
+    );
+
+    expect(find.text('42'), findsOneWidget);
+
+    expect(
+      find.byType(ConcreteStateless),
+      matchesInOrder([
+        isA<BaseStateless>().having((s) => s.height, 'height', 24),
+      ]),
+    );
+  });
+  testWidgets('SingleChildInheritedElementMixin', (tester) async {
+    await tester.pumpWidget(
+      Nested(
+        children: [
+          MyInherited(height: 24),
+        ],
+        child: const Text('42', textDirection: TextDirection.ltr),
+      ),
+    );
+
+    expect(find.text('42'), findsOneWidget);
+
+    expect(
+      find.byType(MyInherited),
+      matchesInOrder([
+        isA<MyInherited>().having((s) => s.height, 'height', 24),
+      ]),
+    );
+
+    await tester.pumpWidget(
+      MyInherited(
+        height: 24,
+        child: const Text('42', textDirection: TextDirection.ltr),
+      ),
+    );
+
+    expect(find.text('42'), findsOneWidget);
+
+    expect(
+      find.byType(MyInherited),
+      matchesInOrder([
+        isA<MyInherited>().having((s) => s.height, 'height', 24),
+      ]),
+    );
+  });
+  testWidgets(
+      'SingleChildStatefulWidget can be used as mixin instead of base class',
+      (tester) async {
+    await tester.pumpWidget(
+      Nested(
+        children: [
+          ConcreteStateful(height: 24),
+        ],
+        child: const Text('42', textDirection: TextDirection.ltr),
+      ),
+    );
+
+    expect(find.text('42'), findsOneWidget);
+
+    expect(
+      find
+          .byType(ConcreteStateful)
+          .evaluate()
+          .map((e) => (e as StatefulElement).state),
+      matchesInOrder([
+        isA<_BaseStatefulState>()
+            .having((s) => s.widget.height, 'widget.height', 24)
+            .having((s) => s.width, 'width', 48),
+      ]),
+    );
+
+    await tester.pumpWidget(
+      ConcreteStateful(
+        height: 24,
+        child: const Text('42', textDirection: TextDirection.ltr),
+      ),
+    );
+
+    expect(find.text('42'), findsOneWidget);
+
+    expect(
+      find
+          .byType(ConcreteStateful)
+          .evaluate()
+          .map((e) => (e as StatefulElement).state),
+      matchesInOrder([
+        isA<_BaseStatefulState>()
+            .having((s) => s.widget.height, 'widget.height', 24)
+            .having((s) => s.width, 'width', 48),
+      ]),
+    );
+  });
 }
 
 class MyStateful extends SingleChildStatefulWidget {
@@ -537,5 +656,96 @@ class MySizedBox extends SingleChildStatelessWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(DoubleProperty('height', height));
+  }
+}
+
+class MyInherited extends InheritedWidget implements SingleChildWidget {
+  MyInherited({Key key, this.height, Widget child})
+      : super(key: key, child: child);
+
+  final double height;
+
+  @override
+  MyInheritedElement createElement() => MyInheritedElement(this);
+
+  @override
+  bool updateShouldNotify(MyInherited oldWidget) {
+    return height != oldWidget.height;
+  }
+}
+
+class MyInheritedElement extends InheritedElement
+    with SingleChildWidgetElement, SingleChildInheritedElementMixin {
+  MyInheritedElement(MyInherited widget) : super(widget);
+
+  @override
+  MyInherited get widget => super.widget as MyInherited;
+}
+
+abstract class BaseStateless extends StatelessWidget {
+  const BaseStateless({Key key, this.height}) : super(key: key);
+
+  final double height;
+}
+
+class ConcreteStateless extends BaseStateless
+    with SingleChildStatelessWidgetMixin {
+  ConcreteStateless({Key key, this.child, double height})
+      : super(key: key, height: height);
+
+  @override
+  final Widget child;
+
+  @override
+  Widget buildWithChild(BuildContext context, Widget child) {
+    return Container(
+      height: height,
+      child: child,
+    );
+  }
+}
+
+abstract class BaseStateful extends StatefulWidget {
+  const BaseStateful({Key key, this.height}) : super(key: key);
+
+  final double height;
+  @override
+  _BaseStatefulState createState() => _BaseStatefulState();
+
+  Widget build(BuildContext context);
+}
+
+class _BaseStatefulState extends State<BaseStateful> {
+  double width;
+
+  @override
+  void initState() {
+    super.initState();
+    width = widget.height * 2;
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.build(context);
+}
+
+class ConcreteStateful extends BaseStateful
+    with SingleChildStatefulWidgetMixin {
+  ConcreteStateful({Key key, double height, this.child})
+      : super(key: key, height: height);
+
+  @override
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => throw Error();
+
+  @override
+  _ConcreteStatefulState createState() => _ConcreteStatefulState();
+}
+
+class _ConcreteStatefulState extends _BaseStatefulState with SingleChildStateMixin {
+  @override
+  Widget buildWithChild(BuildContext context, Widget child) {
+    return SizedBox(height: widget.height, width: width, child: child);
   }
 }
