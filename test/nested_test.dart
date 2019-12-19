@@ -675,7 +675,7 @@ class MyInherited extends InheritedWidget implements SingleChildWidget {
 }
 
 class MyInheritedElement extends InheritedElement
-    with SingleChildWidgetElement, SingleChildInheritedElementMixin {
+    with SingleChildWidgetElementMixin, SingleChildInheritedElementMixin {
   MyInheritedElement(MyInherited widget) : super(widget);
 
   @override

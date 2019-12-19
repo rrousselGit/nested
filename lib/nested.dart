@@ -61,7 +61,6 @@ import 'package:flutter/widgets.dart';
 ///   child: AnotherWidget(),
 /// )
 /// ```
-
 class Nested extends StatelessWidget implements SingleChildWidget {
   /// Allows configuring key, children and child
   Nested({
@@ -86,7 +85,8 @@ class Nested extends StatelessWidget implements SingleChildWidget {
   _NestedElement createElement() => _NestedElement(this);
 }
 
-class _NestedElement extends StatelessElement with SingleChildWidgetElement {
+class _NestedElement extends StatelessElement
+    with SingleChildWidgetElementMixin {
   _NestedElement(Nested widget) : super(widget);
 
   @override
@@ -205,10 +205,10 @@ class _NestedHookElement extends StatelessElement {
 /// - [SingleChildStatefulWidget]
 abstract class SingleChildWidget implements Widget {
   @override
-  SingleChildWidgetElement createElement();
+  SingleChildWidgetElementMixin createElement();
 }
 
-mixin SingleChildWidgetElement on Element {
+mixin SingleChildWidgetElementMixin on Element {
   _NestedHookElement _parent;
 
   @override
@@ -245,13 +245,16 @@ abstract class SingleChildStatelessWidget extends StatelessWidget
   Widget build(BuildContext context) => buildWithChild(context, _child);
 
   @override
-  _SingleChildStatelessElement createElement() =>
-      _SingleChildStatelessElement(this);
+  SingleChildStatelessElement createElement() {
+    return SingleChildStatelessElement(this);
+  }
 }
 
-class _SingleChildStatelessElement extends StatelessElement
-    with SingleChildWidgetElement {
-  _SingleChildStatelessElement(SingleChildStatelessWidget widget)
+/// An [Element] that uses a [SingleChildStatelessWidget] as its configuration.
+class SingleChildStatelessElement extends StatelessElement
+    with SingleChildWidgetElementMixin {
+  /// Creates an element that uses the given widget as its configuration.
+  SingleChildStatelessElement(SingleChildStatelessWidget widget)
       : super(widget);
 
   @override
@@ -278,8 +281,9 @@ abstract class SingleChildStatefulWidget extends StatefulWidget
   final Widget _child;
 
   @override
-  _SingleChildStatefulElement createElement() =>
-      _SingleChildStatefulElement(this);
+  SingleChildStatefulElement createElement() {
+    return SingleChildStatefulElement(this);
+  }
 }
 
 /// A [State] for [SingleChildStatefulWidget].
@@ -299,9 +303,11 @@ abstract class SingleChildState<T extends SingleChildStatefulWidget>
   Widget build(BuildContext context) => buildWithChild(context, widget._child);
 }
 
-class _SingleChildStatefulElement extends StatefulElement
-    with SingleChildWidgetElement {
-  _SingleChildStatefulElement(SingleChildStatefulWidget widget) : super(widget);
+/// An [Element] that uses a [SingleChildStatefulWidget] as its configuration.
+class SingleChildStatefulElement extends StatefulElement
+    with SingleChildWidgetElementMixin {
+  /// Creates an element that uses the given widget as its configuration.
+  SingleChildStatefulElement(SingleChildStatefulWidget widget) : super(widget);
 
   @override
   SingleChildStatefulWidget get widget =>
@@ -351,8 +357,8 @@ mixin SingleChildStatelessWidgetMixin
   Widget get _child => child;
 
   @override
-  _SingleChildStatelessElement createElement() {
-    return _SingleChildStatelessElement(this);
+  SingleChildStatelessElement createElement() {
+    return SingleChildStatelessElement(this);
   }
 
   @override
@@ -361,7 +367,8 @@ mixin SingleChildStatelessWidgetMixin
   }
 }
 
-mixin SingleChildStatefulWidgetMixin on StatefulWidget implements SingleChildWidget {
+mixin SingleChildStatefulWidgetMixin on StatefulWidget
+    implements SingleChildWidget {
   Widget get child;
 
   @override
@@ -382,7 +389,7 @@ mixin SingleChildStateMixin<T extends StatefulWidget> on State<T> {
 }
 
 class _SingleChildStatefulMixinElement extends StatefulElement
-    with SingleChildWidgetElement {
+    with SingleChildWidgetElementMixin {
   _SingleChildStatefulMixinElement(SingleChildStatefulWidgetMixin widget)
       : super(widget);
 
@@ -404,7 +411,7 @@ class _SingleChildStatefulMixinElement extends StatefulElement
 }
 
 mixin SingleChildInheritedElementMixin
-    on InheritedElement, SingleChildWidgetElement {
+    on InheritedElement, SingleChildWidgetElementMixin {
   @override
   Widget build() {
     if (_parent != null) {

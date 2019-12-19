@@ -1,3 +1,7 @@
+## 0.0.3
+
+- Made the element of Stateless/Stateful variants public
+
 ## 0.0.2
 
 - Added the ability to implement `SingleChildWidget` using mixins
