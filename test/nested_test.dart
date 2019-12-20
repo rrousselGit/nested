@@ -564,6 +564,52 @@ void main() {
       ]),
     );
   });
+  testWidgets('Nested with globalKeys', (tester) async {
+    final firstKey = GlobalKey(debugLabel: 'first');
+    final secondKey = GlobalKey(debugLabel: 'second');
+
+    await tester.pumpWidget(
+      Nested(
+        children: [
+          MyStateful(key: firstKey),
+          MyStateful(key: secondKey),
+        ],
+        child: Container(),
+      ),
+    );
+
+    // debugDumpApp();
+
+    expect(
+      find.byType(MyStateful),
+      matchesInOrder([
+        isA<MyStateful>().having((s) => s.key, 'key', firstKey),
+        isA<MyStateful>().having((s) => s.key, 'key', secondKey),
+      ]),
+    );
+
+    await tester.pumpWidget(
+      Nested(
+        children: [
+          MyStateful(key: secondKey, didInit: () => throw Error()),
+          MyStateful(key: firstKey, didInit: () => throw Error()),
+        ],
+        child: Container(),
+      ),
+    );
+
+    // print('\n\n');
+
+    //   debugDumpApp();
+
+    expect(
+      find.byType(MyStateful),
+      matchesInOrder([
+        isA<MyStateful>().having((s) => s.key, 'key', secondKey),
+        isA<MyStateful>().having((s) => s.key, 'key', firstKey),
+      ]),
+    );
+  });
   testWidgets(
       'SingleChildStatefulWidget can be used as mixin instead of base class',
       (tester) async {
@@ -743,7 +789,8 @@ class ConcreteStateful extends BaseStateful
   _ConcreteStatefulState createState() => _ConcreteStatefulState();
 }
 
-class _ConcreteStatefulState extends _BaseStatefulState with SingleChildStateMixin {
+class _ConcreteStatefulState extends _BaseStatefulState
+    with SingleChildStateMixin {
   @override
   Widget buildWithChild(BuildContext context, Widget child) {
     return SizedBox(height: widget.height, width: width, child: child);

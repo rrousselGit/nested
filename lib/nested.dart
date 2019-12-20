@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -156,12 +157,15 @@ class _NestedHookElement extends StatelessElement {
   Widget _injectedChild;
   Widget get injectedChild => _injectedChild;
   set injectedChild(Widget value) {
-    if (value is _NestedHook && _injectedChild is _NestedHook) {
+    final previous = _injectedChild;
+    if (value is _NestedHook &&
+        previous is _NestedHook &&
+        Widget.canUpdate(value.wrappedWidget, previous.wrappedWidget)) {
       // no need to rebuild the wrapped widget just for a _NestedHook.
       // The widget doesn't matter here, only its Element.
       return;
     }
-    if (_injectedChild != value) {
+    if (previous != value) {
       _injectedChild = value;
       visitChildren((e) => e.markNeedsBuild());
     }
@@ -217,6 +221,17 @@ mixin SingleChildWidgetElementMixin on Element {
       _parent = parent;
     }
     super.mount(parent, newSlot);
+  }
+
+  @override
+  void activate() {
+    super.activate();
+    visitAncestorElements((parent) {
+      if (parent is _NestedHookElement) {
+        _parent = parent;
+      }
+      return false;
+    });
   }
 }
 
