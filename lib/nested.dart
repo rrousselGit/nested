@@ -15,7 +15,7 @@ import 'package:flutter/widgets.dart';
 /// The difference between a widget and its single-child variant is that they have
 /// a custom `build` method that takes an extra parameter.
 ///
-/// As such, a `StatelessWidget` would be:
+/// As such, a [StatelessWidget] would be:
 ///
 /// ```dart
 /// class MyWidget extends StatelessWidget {
@@ -68,8 +68,8 @@ class Nested extends StatelessWidget implements SingleChildWidget {
     Key key,
     @required List<SingleChildWidget> children,
     Widget child,
-  })  : assert(children != null),
-        assert(children != null && children.isNotEmpty),
+  })  : assert(children?.isNotEmpty ?? false),
+        assert(child != null),
         _children = children,
         _child = child,
         super(key: key);
