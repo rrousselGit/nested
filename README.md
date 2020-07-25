@@ -100,6 +100,6 @@ Nested(
 )
 ```
 
-[singlechildwidget]: https://pub.dartlang.org/documentation/nexted/latest/nexted/SingleChildWidget-class.html
-[singlechildstatelesswidget]: https://pub.dartlang.org/documentation/nexted/latest/nexted/SingleChildStatelessWidget-class.html
-[singlechildstatefulwidget]: https://pub.dartlang.org/documentation/nexted/latest/nexted/SingleChildStatefulWidget-class.html
+[singlechildwidget]: https://pub.dartlang.org/documentation/nested/latest/nested/SingleChildWidget-class.html
+[singlechildstatelesswidget]: https://pub.dartlang.org/documentation/nested/latest/nested/SingleChildStatelessWidget-class.html
+[singlechildstatefulwidget]: https://pub.dartlang.org/documentation/nested/latest/nested/SingleChildStatefulWidget-class.html
