@@ -17,7 +17,7 @@ class _MatchesInOrder extends Matcher {
   final List<Matcher> itemMatchers;
 
   @override
-  bool matches(Object expectation, Map<dynamic, dynamic> matchState) {
+  bool matches(dynamic expectation, Map<dynamic, dynamic> matchState) {
     var count = 0;
 
     List<Object> items;
@@ -26,6 +26,8 @@ class _MatchesInOrder extends Matcher {
           expectation.evaluate().map((e) => e.widget).toList(growable: false);
     } else if (expectation is Iterable<Object>) {
       items = expectation.toList();
+    } else {
+      throw StateError('Expectation of unknown kind $expectation');
     }
 
     matchState['items'] = items;
@@ -61,7 +63,7 @@ class _MatchesInOrder extends Matcher {
 
   @override
   Description describeMismatch(
-    Object item,
+    dynamic item,
     Description mismatchDescription,
     Map<dynamic, dynamic> matchState,
     bool verbose,
@@ -73,6 +75,8 @@ class _MatchesInOrder extends Matcher {
       items = item.evaluate().toList(growable: false);
     } else if (item is Iterable<Object>) {
       items = item.toList();
+    } else {
+      throw StateError('Item of unexpected tyoe $item');
     }
 
     if (items.length != itemMatchers.length) {

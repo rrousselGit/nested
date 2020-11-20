@@ -105,13 +105,6 @@ void main() {
   test('children is required', () {
     expect(
       () => Nested(
-        children: null,
-        child: const Text('foo', textDirection: TextDirection.ltr),
-      ),
-      throwsAssertionError,
-    );
-    expect(
-      () => Nested(
         children: [],
         child: const Text('foo', textDirection: TextDirection.ltr),
       ),
@@ -151,7 +144,7 @@ void main() {
       final second = SingleChildBuilder(
         builder: (_, child) {
           buildCount2++;
-          return child;
+          return child!;
         },
       );
 
@@ -200,7 +193,7 @@ void main() {
       final second = SingleChildBuilder(
         builder: (_, child) {
           buildCount2++;
-          return child;
+          return child!;
         },
       );
 
@@ -315,18 +308,9 @@ void main() {
     },
   );
 
-  test('children cannot be null', () {
-    expect(
-      () => Nested(
-        children: null,
-        child: Container(),
-      ),
-      throwsAssertionError,
-    );
-  });
   testWidgets('last node receives child directly', (tester) async {
-    Widget child;
-    BuildContext context;
+    Widget? child;
+    BuildContext? context;
 
     await tester.pumpWidget(
       Nested(
@@ -354,7 +338,7 @@ void main() {
           SingleChildBuilder(
             builder: (ctx, c) {
               context = ctx;
-              return child = c;
+              return (child = c)!;
             },
           )
         ],
@@ -368,34 +352,10 @@ void main() {
   // TODO: assert keys order preserved (reorder unsupported)
   // TODO: nodes can be added optionally using [if] (_Hook takes a globalKey on the child's key)
   // TODO: a nested node moves to a new Nested
-  test('SingleChildBuilder builder cannot be null', () {
-    expect(
-      () => SingleChildBuilder(builder: null),
-      throwsAssertionError,
-    );
-  });
 
-  test('100% coverage for Nested.build & _NestedHook.build', () {
-    final nested = Nested(
-      children: [MySizedBox()],
-    );
-    expect(
-      () => nested.build(null),
-      throwsStateError,
-    );
-
-    final first = nested.createElement().build() as StatelessWidget;
-
-    expect(
-      () =>
-          // ignore: invalid_use_of_protected_member
-          first.build(null),
-      throwsStateError,
-    );
-  });
   testWidgets('SingleChildBuilder can be used alone', (tester) async {
-    Widget child;
-    BuildContext context;
+    Widget? child;
+    BuildContext? context;
     var container = Container();
 
     await tester.pumpWidget(
@@ -403,7 +363,7 @@ void main() {
         builder: (ctx, c) {
           context = ctx;
           child = c;
-          return c;
+          return c!;
         },
         child: container,
       ),
@@ -419,7 +379,7 @@ void main() {
         builder: (ctx, c) {
           context = ctx;
           child = c;
-          return c;
+          return c!;
         },
         child: container,
       ),
@@ -446,8 +406,8 @@ void main() {
     );
   });
   testWidgets('SingleChildStatefulWidget can be used alone', (tester) async {
-    Widget child;
-    BuildContext context;
+    Widget? child;
+    BuildContext? context;
 
     final text = const Text('foo', textDirection: TextDirection.ltr);
 
@@ -456,7 +416,6 @@ void main() {
         didBuild: (ctx, c) {
           child = c;
           context = ctx;
-          return c;
         },
         child: text,
       ),
@@ -468,8 +427,8 @@ void main() {
   });
   testWidgets('SingleChildStatefulWidget can be used in nested',
       (tester) async {
-    Widget child;
-    BuildContext context;
+    Widget? child;
+    BuildContext? context;
 
     final text = const Text('foo', textDirection: TextDirection.ltr);
 
@@ -480,7 +439,6 @@ void main() {
             didBuild: (ctx, c) {
               child = c;
               context = ctx;
-              return c;
             },
           ),
         ],
@@ -533,7 +491,10 @@ void main() {
     await tester.pumpWidget(
       Nested(
         children: [
-          MyInherited(height: 24),
+          MyInherited(
+            height: 24,
+            child: const SizedBox.shrink(),
+          ),
         ],
         child: const Text('42', textDirection: TextDirection.ltr),
       ),
@@ -660,11 +621,11 @@ void main() {
 }
 
 class MyStateful extends SingleChildStatefulWidget {
-  const MyStateful({Key key, this.didBuild, this.didInit, Widget child})
+  const MyStateful({Key? key, this.didBuild, this.didInit, Widget? child})
       : super(key: key, child: child);
 
-  final void Function(BuildContext, Widget) didBuild;
-  final void Function() didInit;
+  final void Function(BuildContext, Widget?)? didBuild;
+  final void Function()? didInit;
 
   @override
   _MyStatefulState createState() => _MyStatefulState();
@@ -678,24 +639,24 @@ class _MyStatefulState extends SingleChildState<MyStateful> {
   }
 
   @override
-  Widget buildWithChild(BuildContext context, Widget child) {
+  Widget buildWithChild(BuildContext context, Widget? child) {
     widget.didBuild?.call(context, child);
-    return child;
+    return child!;
   }
 }
 
 class MySizedBox extends SingleChildStatelessWidget {
-  MySizedBox({Key key, this.didBuild, this.height, Widget child})
+  MySizedBox({Key? key, this.didBuild, this.height, Widget? child})
       : super(key: key, child: child);
 
-  final double height;
+  final double? height;
 
-  final void Function(BuildContext context, Widget child) didBuild;
+  final void Function(BuildContext context, Widget? child)? didBuild;
 
   @override
-  Widget buildWithChild(BuildContext context, Widget child) {
+  Widget buildWithChild(BuildContext context, Widget? child) {
     didBuild?.call(context, child);
-    return child;
+    return child!;
   }
 
   @override
@@ -706,10 +667,10 @@ class MySizedBox extends SingleChildStatelessWidget {
 }
 
 class MyInherited extends InheritedWidget implements SingleChildWidget {
-  MyInherited({Key key, this.height, Widget child})
+  MyInherited({Key? key, this.height, required Widget child})
       : super(key: key, child: child);
 
-  final double height;
+  final double? height;
 
   @override
   MyInheritedElement createElement() => MyInheritedElement(this);
@@ -729,21 +690,21 @@ class MyInheritedElement extends InheritedElement
 }
 
 abstract class BaseStateless extends StatelessWidget {
-  const BaseStateless({Key key, this.height}) : super(key: key);
+  const BaseStateless({Key? key, this.height}) : super(key: key);
 
-  final double height;
+  final double? height;
 }
 
 class ConcreteStateless extends BaseStateless
     with SingleChildStatelessWidgetMixin {
-  ConcreteStateless({Key key, this.child, double height})
+  ConcreteStateless({Key? key, this.child, double? height})
       : super(key: key, height: height);
 
   @override
-  final Widget child;
+  final Widget? child;
 
   @override
-  Widget buildWithChild(BuildContext context, Widget child) {
+  Widget buildWithChild(BuildContext context, Widget? child) {
     return Container(
       height: height,
       child: child,
@@ -752,7 +713,7 @@ class ConcreteStateless extends BaseStateless
 }
 
 abstract class BaseStateful extends StatefulWidget {
-  const BaseStateful({Key key, this.height}) : super(key: key);
+  const BaseStateful({Key? key, required this.height}) : super(key: key);
 
   final double height;
   @override
@@ -762,7 +723,7 @@ abstract class BaseStateful extends StatefulWidget {
 }
 
 class _BaseStatefulState extends State<BaseStateful> {
-  double width;
+  late double width;
 
   @override
   void initState() {
@@ -776,11 +737,11 @@ class _BaseStatefulState extends State<BaseStateful> {
 
 class ConcreteStateful extends BaseStateful
     with SingleChildStatefulWidgetMixin {
-  ConcreteStateful({Key key, double height, this.child})
+  ConcreteStateful({Key? key, required double height, this.child})
       : super(key: key, height: height);
 
   @override
-  final Widget child;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) => throw Error();

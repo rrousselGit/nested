@@ -16,13 +16,13 @@ void main() {
 }
 
 class SingleChildContainer extends SingleChildStatelessWidget {
-  const SingleChildContainer({Key key, this.color, Widget child})
+  const SingleChildContainer({Key? key, required this.color, Widget? child})
       : super(key: key, child: child);
 
   final Color color;
 
   @override
-  Widget buildWithChild(BuildContext context, Widget child) {
+  Widget buildWithChild(BuildContext context, Widget? child) {
     return Container(
       color: color,
       child: child,
