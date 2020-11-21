@@ -723,7 +723,7 @@ abstract class BaseStateful extends StatefulWidget {
 }
 
 class _BaseStatefulState extends State<BaseStateful> {
-  late double width;
+  double? width;
 
   @override
   void initState() {
