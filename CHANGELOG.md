@@ -1,3 +1,7 @@
+## 0.0.5-nullsafety.1
+
+Migrated to null-safety (Thanks to @vishna!)
+
 ## 0.0.3
 
 - Made the element of Stateless/Stateful variants public
