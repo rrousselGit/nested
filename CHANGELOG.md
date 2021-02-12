@@ -1,6 +1,6 @@
-## 0.0.5-nullsafety.1
+## 0.0.5
 
-Migrated to null-safety (Thanks to @vishna!)
+- Support null-safety (Thanks to [@vishna](https://github.com/vishna)!)
 
 ## 0.0.3
 
