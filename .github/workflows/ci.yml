@@ -39,7 +39,7 @@ jobs:
       # Analyze, check format, and run tests for the repository.
       - run: flutter pub get
         working-directory: code
-      - run: flutter analyze
+      - run: flutter analyze --fatal-infos
         working-directory: code
       - run: flutter format --set-exit-if-changed --dry-run .
         working-directory: code
