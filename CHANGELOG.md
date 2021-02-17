@@ -1,3 +1,5 @@
+## 1.0.0
+
 ## 0.0.5
 
 - Support null-safety (Thanks to [@vishna](https://github.com/vishna)!)

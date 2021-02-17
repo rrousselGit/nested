@@ -1,4 +1,4 @@
-[![pub package](https://img.shields.io/pub/v/nested.svg)](https://pub.dartlang.org/packages/nested)
+[![pub package](https://img.shields.io/pub/v/nested.svg)](https://pub.dartlang.org/packages/nested) ![ci](https://github.com/rrousselGit/nested/workflows/ci/badge.svg)
 
 A widget that simplifies the syntax for deeply nested widget trees.
 
