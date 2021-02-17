@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/rrousselGit/nested.svg?branch=master)](https://travis-ci.org/rrousselGit/nested)
-[![pub package](https://img.shields.io/pub/v/nested.svg)](https://pub.dartlang.org/packages/nested) [![codecov](https://codecov.io/gh/rrousselGit/nested/branch/master/graph/badge.svg)](https://codecov.io/gh/rrousselGit/nested)
+[![pub package](https://img.shields.io/pub/v/nested.svg)](https://pub.dartlang.org/packages/nested)
 
 A widget that simplifies the syntax for deeply nested widget trees.
 
