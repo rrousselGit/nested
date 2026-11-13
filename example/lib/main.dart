@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:nested/nested.dart';
 
 void main() {
@@ -6,9 +6,7 @@ void main() {
     Nested(
       children: [
         const SingleChildContainer(color: Colors.red),
-        SingleChildBuilder(
-          builder: (context, child) => Center(child: child),
-        ),
+        SingleChildBuilder(builder: (context, child) => Center(child: child)),
       ],
       child: const Text('Hello world', textDirection: TextDirection.ltr),
     ),
@@ -17,15 +15,12 @@ void main() {
 
 class SingleChildContainer extends SingleChildStatelessWidget {
   const SingleChildContainer({Key? key, required this.color, Widget? child})
-      : super(key: key, child: child);
+    : super(key: key, child: child);
 
   final Color color;
 
   @override
   Widget buildWithChild(BuildContext context, Widget? child) {
-    return Container(
-      color: color,
-      child: child,
-    );
+    return Container(color: color, child: child);
   }
 }
